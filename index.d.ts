@@ -1,13 +1,10 @@
 import { PublicKey as PubK } from './helpers/PublicKey'
-import { Signature as Sig } from './helpers/Signature'
 
 declare module 'hive-tx'
 
 export class PublicKey extends PubK {}
-export class Signature extends Sig {}
-
 export class Transaction {
-  constructor(trx?: object, chainId?: Buffer)
+  constructor(sha256Lib: (input: any) => Buffer, trx?: object, chainId?: string | Buffer)
 
   broadcast(): Promise<{
     id: number

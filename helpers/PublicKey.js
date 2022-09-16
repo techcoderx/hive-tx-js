@@ -1,5 +1,3 @@
-// const crypto = require('crypto')
-const crypto = require('./crypto')
 const bs58 = require('bs58')
 const config = require('../config')
 
@@ -27,21 +25,6 @@ class PublicKey {
     this.prefix = prefix
     // assert(secp256k1.publicKeyVerify(key), 'invalid public key')
   }
-
-  /** Return a WIF-encoded representation of the key. */
-  toString () {
-    return encodePublic(this.key, this.prefix)
-  }
-
-  /** Used by `utils.inspect` and `console.log` in node.js. */
-  inspect () {
-    return `PublicKey: ${this.toString()}`
-  }
-}
-
-const encodePublic = (key, prefix) => {
-  const checksum = crypto.ripemd160(key)
-  return prefix + bs58.encode(Buffer.concat([key, checksum.slice(0, 4)]))
 }
 
 /** Decode bs58+ripemd160-checksum encoded public key. */

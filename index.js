@@ -9,15 +9,20 @@ const config = require('./config')
 /** Transaction for Hive blockchain */
 class Transaction {
   /** A transaction object could be passed or created later
+   * @param {function} sha256Lib External SHA256 implementation
    * @param {{}} trx Object of transaction - Optional
+   * @param {string|Buffer} chainId Chain ID to be used for the transaction
    */
-  constructor (trx = null, chainId = getCurrentChainId()) {
+  constructor (sha256Lib, trx = null, chainId = getCurrentChainId()) {
+    if (typeof chainId === 'string')
+      chainId = Buffer.from(chainId,'hex')
     this.created = true
     if (!trx) {
       this.created = false
     }
     this.transaction = trx
     this.chainId = chainId
+    this.sha256Lib = sha256Lib
   }
 
   /** Create the transaction by operations
@@ -37,7 +42,7 @@ class Transaction {
     if (!this.created) {
       throw new Error('First create a transaction by .create(operations)')
     }
-    const { digest, txId } = transactionDigest(this.transaction, this.chainId)
+    const { digest, txId } = transactionDigest(this.sha256Lib, this.transaction, this.chainId)
     this.txId = txId
     return digest
   }
@@ -73,25 +78,8 @@ class Transaction {
     return {
       id: 1,
       jsonrpc: '2.0',
-      result: { tx_id: this.txId, status: 'unkown' }
+      result: { tx_id: this.txId, status: 'unknown' }
     }
-  }
-
-  /** Fast broadcast - No open connection */
-  async broadcastNoResult () {
-    console.log('Deprecated: .broadcastNoResult() is identical to .broadcast() - use .broadcast() instead')
-    if (!this.created) {
-      throw new Error('First create a transaction by .create(operations)')
-    }
-    if (!this.signedTransaction) {
-      throw new Error('Sign transaction first and append signature with appendSignature()')
-    }
-    await broadcastTransactionNoResult(this.signedTransaction)
-    return {
-      id: 1,
-      jsonrpc: '2.0',
-      result: { tx_id: this.txId, status: 'unkown' }
-    } // result
   }
 }
 

@@ -1,10 +1,9 @@
 const ByteBuffer = require('bytebuffer')
 const serializer = require('../helpers/serializer')
-const crypto = require('../helpers/crypto')
 const getCurrentChainId = require('../helpers/chainId')
 
 /** Serialize transaction */
-const transactionDigest = (transaction, chainId = getCurrentChainId()) => {
+const transactionDigest = (sha256, transaction, chainId = getCurrentChainId()) => {
   const buffer = new ByteBuffer(
     ByteBuffer.DEFAULT_CAPACITY,
     ByteBuffer.LITTLE_ENDIAN
@@ -16,8 +15,8 @@ const transactionDigest = (transaction, chainId = getCurrentChainId()) => {
   }
   buffer.flip()
   const transactionData = Buffer.from(buffer.toBuffer())
-  const txId = crypto.sha256(transactionData).toString('hex').slice(0, 40)
-  const digest = crypto.sha256(Buffer.concat([chainId, transactionData]))
+  const txId = sha256(transactionData).toString('hex').slice(0, 40)
+  const digest = sha256(Buffer.concat([chainId, transactionData]))
   return { digest, txId }
 }
 
