@@ -7,10 +7,4 @@ export class PublicKey {
   static from(value: string | PublicKey): PublicKey
 
   constructor(key: Buffer, prefix?: string)
-
-  toString(): string
-
-  toJSON(): string
-
-  inspect(): string
 }

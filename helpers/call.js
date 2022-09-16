@@ -7,12 +7,12 @@ const config = require('../config')
  * @param {Array}params - an array
  * @param {Number}timeout - optional - default 10 seconds
  */
-const call = async (method, params = [], timeout = 10) => {
+const call = async (method, params = [], node = '', timeout = 10) => {
   let resolved = 0
   return new Promise((resolve, reject) => {
     axios
       .post(
-        config.node,
+        node || config.node,
         JSON.stringify({
           jsonrpc: '2.0',
           method,

@@ -1,8 +1,8 @@
 const call = require('./call')
 
 /** return global properties */
-const getGlobalProps = async () => {
-  const res = await call('condenser_api.get_dynamic_global_properties')
+const getGlobalProps = async (node) => {
+  const res = await call('condenser_api.get_dynamic_global_properties',[],node)
   if (!res) {
     throw new Error("Couldn't resolve global properties")
   }

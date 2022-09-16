@@ -1,7 +1,6 @@
 const {transactionDigest} = require('./transactions/signTransaction')
 const createTransaction = require('./transactions/createTransaction')
 const broadcastTransaction = require('./transactions/broadcastTransaction')
-const broadcastTransactionNoResult = require('./transactions/broadcastTransactionNoResult')
 const getCurrentChainId = require('./helpers/chainId')
 const call = require('./helpers/call')
 const config = require('./config')
@@ -28,9 +27,10 @@ class Transaction {
   /** Create the transaction by operations
    * @param {[Array]} operations
    * @param {Number} expiration Optional - Default 60 seconds
+   * @param {string} node Override API node to be used to create transaction
    */
-  async create (operations, expiration = 60) {
-    this.transaction = await createTransaction(operations, expiration)
+  async create (operations, expiration = 60, node = '') {
+    this.transaction = await createTransaction(operations, expiration, node)
     this.created = true
     return this.transaction
   }
@@ -64,14 +64,14 @@ class Transaction {
     this.signedTransaction.signatures.push(signature)
   }
 
-  async broadcast () {
+  async broadcast (node = '') {
     if (!this.created) {
       throw new Error('First create a transaction by .create(operations)')
     }
     if (!this.signedTransaction) {
       throw new Error('Sign transaction first and append signature with appendSignature()')
     }
-    const result = await broadcastTransaction(this.signedTransaction)
+    const result = await broadcastTransaction(this.signedTransaction, node)
     if (result.error) {
       return result
     }

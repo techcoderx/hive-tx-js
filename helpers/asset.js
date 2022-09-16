@@ -4,13 +4,6 @@ class Asset {
   /** Create a new Asset instance from a string, e.g. `42.000 HIVE`. */
   static fromString (string, expectedSymbol = null) {
     const [amountString, symbol] = string.split(' ')
-    if (
-      ['STEEM', 'VESTS', 'SBD', 'TESTS', 'TBD', 'HIVE', 'HBD'].indexOf(
-        symbol
-      ) === -1
-    ) {
-      throw new Error(`Invalid asset symbol: ${symbol}`)
-    }
     if (expectedSymbol && symbol !== expectedSymbol) {
       throw new Error(
         `Invalid asset, expected symbol: ${expectedSymbol} got: ${symbol}`
@@ -55,15 +48,10 @@ class Asset {
   /** Return asset precision. */
   getPrecision () {
     switch (this.symbol) {
-      case 'TESTS':
-      case 'TBD':
-      case 'STEEM':
-      case 'SBD':
-      case 'HBD':
-      case 'HIVE':
-        return 3
       case 'VESTS':
         return 6
+      default:
+        return 3
     }
   }
 

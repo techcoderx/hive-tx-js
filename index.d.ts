@@ -6,21 +6,16 @@ export class PublicKey extends PubK {}
 export class Transaction {
   constructor(sha256Lib: (input: any) => Buffer, trx?: object, chainId?: string | Buffer)
 
-  broadcast(): Promise<{
+  broadcast(node?: string): Promise<{
     id: number
     jsonrpc: string
     result: { tx_id: string; status: string }
   } | {error: object}>
 
-  broadcastNoResult(): Promise<{
-    id: number
-    jsonrpc: string
-    result: { tx_id: string; status: string }
-  }>
-
   create(
     operations: any[],
-    expiration?: number
+    expiration?: number,
+    node?: string
   ): Promise<{
     expiration: string
     extensions: any[]
