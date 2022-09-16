@@ -2,8 +2,6 @@
 const crypto = require('./crypto')
 const bs58 = require('bs58')
 const config = require('../config')
-const secp256k1 = require('secp256k1')
-
 
 const DEFAULT_ADDRESS_PREFIX = config.address_prefix
 
@@ -30,23 +28,9 @@ class PublicKey {
     // assert(secp256k1.publicKeyVerify(key), 'invalid public key')
   }
 
-  /**
-   * Verify a 32-byte signature.
-   * @param message 32-byte message to verify.
-   * @param signature Signature to verify.
-   */
-  verify(message, signature) {
-      return secp256k1.verify(message, signature.data, this.key)
-  }
-
   /** Return a WIF-encoded representation of the key. */
   toString () {
     return encodePublic(this.key, this.prefix)
-  }
-
-  /** Return JSON representation of this key, same as toString(). */
-  toJSON () {
-    return this.toString()
   }
 
   /** Used by `utils.inspect` and `console.log` in node.js. */

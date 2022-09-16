@@ -3,28 +3,6 @@ const serializer = require('../helpers/serializer')
 const crypto = require('../helpers/crypto')
 const getCurrentChainId = require('../helpers/chainId')
 
-/**
- * Sign a transaction by keys (supports multi signature)
- * @param transaction - transaction to be signed
- * @param keys - Array of keys<Buffer>
- */
-const signTransaction = (transaction, keys, chainId = getCurrentChainId()) => {
-  const { digest, txId } = transactionDigest(transaction, chainId)
-  const signedTransaction = { ...transaction }
-  if (!signedTransaction.signatures) {
-    signedTransaction.signatures = []
-  }
-  if (!Array.isArray(keys)) {
-    keys = [keys]
-  }
-  for (const key of keys) {
-    const signature = key.sign(digest)
-    signedTransaction.signatures.push(signature.customToString())
-  }
-
-  return { signedTransaction, txId }
-}
-
 /** Serialize transaction */
 const transactionDigest = (transaction, chainId = getCurrentChainId()) => {
   const buffer = new ByteBuffer(
@@ -43,4 +21,4 @@ const transactionDigest = (transaction, chainId = getCurrentChainId()) => {
   return { digest, txId }
 }
 
-module.exports = { transactionDigest, signTransaction}
+module.exports = {transactionDigest}

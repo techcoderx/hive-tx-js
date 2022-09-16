@@ -1,10 +1,8 @@
-import { PrivateKey as PK } from './helpers/PrivateKey'
 import { PublicKey as PubK } from './helpers/PublicKey'
 import { Signature as Sig } from './helpers/Signature'
 
 declare module 'hive-tx'
 
-export class PrivateKey extends PK {}
 export class PublicKey extends PubK {}
 export class Signature extends Sig {}
 
@@ -37,15 +35,6 @@ export class Transaction {
   serialize(): Buffer
 
   appendSignature(signature: string): void
-
-  sign(keys: any | any[]): {
-    expiration: string
-    extensions: any[]
-    operations: any[]
-    ref_block_num: number
-    ref_block_prefix: number
-    signatures: string[]
-  }
 }
 
 export const config: {

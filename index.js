@@ -1,18 +1,10 @@
-const {transactionDigest, signTransaction} = require('./transactions/signTransaction')
+const {transactionDigest} = require('./transactions/signTransaction')
 const createTransaction = require('./transactions/createTransaction')
 const broadcastTransaction = require('./transactions/broadcastTransaction')
 const broadcastTransactionNoResult = require('./transactions/broadcastTransactionNoResult')
 const getCurrentChainId = require('./helpers/chainId')
-const PrivateKey = require('./helpers/PrivateKey')
-const PublicKey = require('./helpers/PublicKey')
-const Signature = require('./helpers/Signature')
 const call = require('./helpers/call')
 const config = require('./config')
-const updateOperations = () => {
-  console.log(
-    '[Hive-tx] Warning: You can safely remove `.updateOperations()` from you app. Deprecated.'
-  )
-}
 
 /** Transaction for Hive blockchain */
 class Transaction {
@@ -45,7 +37,7 @@ class Transaction {
     if (!this.created) {
       throw new Error('First create a transaction by .create(operations)')
     }
-    const { digest, txId } = transactionDigest(transaction, this.chainId)
+    const { digest, txId } = transactionDigest(this.transaction, this.chainId)
     this.txId = txId
     return digest
   }
@@ -67,25 +59,12 @@ class Transaction {
     this.signedTransaction.signatures.push(signature)
   }
 
-  /** Sign the transaction by key or keys[] (supports multi signature)
-   * @param {PrivateKey|[PrivateKey]} keys single key or multiple keys in array
-   */
-  sign (keys) {
-    if (!this.created) {
-      throw new Error('First create a transaction by .create(operations)')
-    }
-    const { signedTransaction, txId } = signTransaction(this.transaction, keys)
-    this.signedTransaction = signedTransaction
-    this.txId = txId
-    return this.signedTransaction
-  }
-
   async broadcast () {
     if (!this.created) {
       throw new Error('First create a transaction by .create(operations)')
     }
     if (!this.signedTransaction) {
-      throw new Error('First sign the transaction by .sign(keys)')
+      throw new Error('Sign transaction first and append signature with appendSignature()')
     }
     const result = await broadcastTransaction(this.signedTransaction)
     if (result.error) {
@@ -105,7 +84,7 @@ class Transaction {
       throw new Error('First create a transaction by .create(operations)')
     }
     if (!this.signedTransaction) {
-      throw new Error('First sign the transaction by .sign(keys)')
+      throw new Error('Sign transaction first and append signature with appendSignature()')
     }
     await broadcastTransactionNoResult(this.signedTransaction)
     return {
@@ -116,4 +95,4 @@ class Transaction {
   }
 }
 
-module.exports = { Transaction, PrivateKey, call, config, updateOperations, PublicKey, Signature }
+module.exports = { Transaction, call, config }
