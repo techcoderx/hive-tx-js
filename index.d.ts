@@ -9,7 +9,7 @@ export class PublicKey extends PubK {}
 export class Signature extends Sig {}
 
 export class Transaction {
-  constructor(trx?: object)
+  constructor(trx?: object, chainId?: Buffer)
 
   broadcast(): Promise<{
     id: number
@@ -33,6 +33,10 @@ export class Transaction {
     ref_block_num: number
     ref_block_prefix: number
   }>
+
+  serialize(): Buffer
+
+  appendSignature(signature: string): void
 
   sign(keys: any | any[]): {
     expiration: string
