@@ -19,7 +19,6 @@
   "author": "Mahdi Yari",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.27.2",
     "bs58": "^5.0.0",
     "bytebuffer": "^5.0.1"
   },
