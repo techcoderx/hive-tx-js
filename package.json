@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "bs58": "^5.0.0",
-    "bytebuffer": "^5.0.1"
+    "bytebuffer-hex-custom": "^1.0.1"
   },
   "homepage": "https://github.com/mahdiyari/hive-tx-js",
   "repository": {

@@ -1,4 +1,4 @@
-const ByteBuffer = require('bytebuffer')
+const ByteBuffer = require('bytebuffer-hex-custom')
 const serializer = require('../helpers/serializer')
 const getCurrentChainId = require('../helpers/chainId')
 
