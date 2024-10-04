@@ -1,7 +1,6 @@
 const PublicKey = require('./PublicKey')
 const Asset = require('./asset')
 const HexBuffer = require('./HexBuffer')
-const config = require('../config')
 
 const VoidSerializer = () => {
   throw new Error('Void can not be serialized')
@@ -49,7 +48,32 @@ const BooleanSerializer = (buffer, data) => {
 
 const StaticVariantSerializer = (itemSerializers) => {
   return (buffer, data) => {
-    const [id, item] = data
+    let id = data[0]
+    const item = data[1]
+    // id was/is supposed to be 0 or integer here but seems to have been changed in e.g. comment_options
+    // extensions: [
+    //   [
+    //     "comment_payout_beneficiaries",
+    //     {
+    //       "beneficiaries": [
+    //         {
+    //           "account": "vimm",
+    //           "weight": 1000
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // ]
+    // "comment_payout_beneficiaries" was 0 and at some point it got changed
+    // It should still be serialized as a 0 or an integer
+    // Now the question is, always 0? will need an example transaction to prove otherwise
+    if (typeof id === 'string') {
+      if (id === 'update_proposal_end_date') {
+        id = 1
+      } else {
+        id = 0
+      }
+    }
     buffer.writeVarint32(id)
     itemSerializers[id](buffer, item)
   }
@@ -599,11 +623,39 @@ const TransactionSerializer = ObjectSerializer([
   ['extensions', ArraySerializer(StringSerializer)]
 ])
 
+const SignedTransactionSerializer = ObjectSerializer([
+  ['ref_block_num', UInt16Serializer],
+  ['ref_block_prefix', UInt32Serializer],
+  ['expiration', DateSerializer],
+  ['operations', ArraySerializer(OperationSerializer)],
+  ['extensions', ArraySerializer(StringSerializer)],
+  ['signatures', ArraySerializer(BinarySerializer(65))]
+])
+
+const EncryptedMemoSerializer = ObjectSerializer([
+  ['from', PublicKeySerializer],
+  ['to', PublicKeySerializer],
+  ['nonce', UInt64Serializer],
+  ['check', UInt32Serializer],
+  ['encrypted', BinarySerializer()]
+])
+
+const SignedBlockSerializer = ObjectSerializer([
+  ['previous', BinarySerializer(20)],
+  ['timestamp', DateSerializer],
+  ['witness', StringSerializer],
+  ['transaction_merkle_root', BinarySerializer(20)],
+  ['extensions', ArraySerializer(VoidSerializer)],
+  ['witness_signature', BinarySerializer(65)],
+  ['transactions', ArraySerializer(SignedTransactionSerializer)]
+])
+
 const Types = {
   Array: ArraySerializer,
   Asset: AssetSerializer,
   Authority: AuthoritySerializer,
   Binary: BinarySerializer,
+  Block: SignedBlockSerializer,
   Boolean: BooleanSerializer,
   Date: DateSerializer,
   FlatMap: FlatMapSerializer,
@@ -611,6 +663,7 @@ const Types = {
   Int32: Int32Serializer,
   Int64: Int64Serializer,
   Int8: Int8Serializer,
+  Memo: EncryptedMemoSerializer,
   Object: ObjectSerializer,
   Operation: OperationSerializer,
   Optional: OptionalSerializer,
