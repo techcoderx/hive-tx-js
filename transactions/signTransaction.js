@@ -20,4 +20,20 @@ const transactionDigest = (sha256, transaction, chainId = getCurrentChainId()) =
   return { digest, txId }
 }
 
-module.exports = {transactionDigest}
+/** Serialize signed block */
+const serializeBlock = (block) => {
+  const buffer = new ByteBuffer(
+    ByteBuffer.DEFAULT_CAPACITY,
+    ByteBuffer.LITTLE_ENDIAN
+  )
+  try {
+    serializer.Block(buffer, block)
+  } catch (cause) {
+    throw new Error('Unable to serialize block')
+  }
+  buffer.flip()
+  const blockData = Buffer.from(buffer.toBuffer())
+  return blockData
+}
+
+module.exports = {transactionDigest, serializeBlock}
